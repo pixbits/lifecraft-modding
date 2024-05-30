@@ -1,0 +1,784 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Lifecraft API</title>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Helvetica;
+      font-size: 12pt;
+      background-color: #021735;
+      color: #FFFFFF;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      grid-template-rows: auto 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #header {
+      font-size: 200%;
+      font-weight: bold;
+      background-color: #021735;
+      color: #f1f1f1;
+      border-bottom: 2px solid #007acc;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-area: 1/1/span 1/span 2;
+    }
+    #header #namecontainer {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+    }
+    #header #namecontainer img {
+      padding-right: 10px;
+    }
+    #header #searchbox {
+      align-self: center;
+    }
+    #header #searchbox > input {
+      float: right;
+      width: 400px;
+    }
+    #summary {
+      border-right: 2px solid #007acc;
+      padding: 5px;
+      overflow: auto;
+      grid-area: 2/1/span 1/span 1;
+    }
+    #content {
+      padding: 20px;
+      overflow: auto;
+      grid-area: 2/2/span 1/span 1;
+    }
+    h1 {
+      font-size: 150%;
+      font-weight: bold;
+      color: #007acc;
+      margin: 0 0 5px 0;
+    }
+    h2 {
+      font-size: 120%;
+      text-decoration: underline;
+      color: #d9e9ff;
+      padding: 5px 0px 0px 5px;
+    }
+    a, a:hover, a:visited {
+      color: #FFFFFF;
+    }
+    .api {
+      font-family: Consolas, Monaco, Courier New, Courier;
+      font-size: 11pt;
+      white-space: pre;
+      tab-size: 20px;
+    }
+    .summary-root-category {
+      color: #5ECBF2;
+    }
+    .AS-keyword {
+      font-weight: bold;
+      color: #5ECBF2;
+    }
+    .AS-number {
+      font-weight: bold;
+      color: #659AF3;
+    }
+    .AS-valuetype {
+      font-weight: bold;
+      color: #FFE400;
+    }
+    .AS-enumtype {
+      font-weight: bold;
+      color: #FFE400;
+    }
+    .AS-enumvalue {
+      color: #00f94e;
+    }
+    .AS-functionname {
+      color: #6CDBB7;
+    }
+    .AS-methodname {
+      color: #6CDBB7;
+    }
+    .AS-namespace {
+      color: #FFAC00;
+    }
+    .AS-classtype {
+      font-weight: bold;
+      color: #FFE400;
+    }
+    .block {
+      margin: 0px 10px 10px 20px;
+      padding: 10px;
+      border: none;
+      background-color: #031f47;
+    }
+    .block2 {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      background-color: #043170;
+    }
+    .documentation {
+      //width: 500px;
+      padding: 10px 20px;
+      font-style: italic;
+      font-size: 80%;
+      color: #DDDDDD;
+    }
+    .indented {
+      padding-left: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    .link {
+      cursor: pointer;
+    }
+    .link:hover {
+      text-decoration: underline;
+    }
+    .generated_on {
+      padding-top: 10px;
+      font-size: 80%;
+      color: #666666;
+    }
+
+    
+  </style>
+  <script type="text/javascript">
+    $(document).ready(() => {
+      // handle search shortcut
+      $(document).keydown((ev) => {
+        if (ev.key == 'F4' || ev.code == 'F4')
+          $('#searchbox input').focus();
+      });
+
+      // handle search, need to set same handler to multiple events, so wrap in 
+      // anonymous function so we don't litter the global namespace
+      (() => {
+        
+        let handler = (ev) => {
+          const 
+            v = ev.target.value.toLowerCase(),
+            m = '[name' + (v.length ? '*=' + v : '') + ']',
+            s = '#content '+m, 
+            h = '#content [name]:not('+m+')';
+          $(h).hide();
+          $(s).show().parents('[name]').show();
+        };
+        $('#searchbox input').keyup(handler);
+        $('#searchbox input').change(handler);
+      })();
+
+      // handle anchor jumps
+      $('a[targetname].link').click((ev)=>{
+        let targetName = $(ev.currentTarget).attr('targetname'),
+          target = $('a[name=\'' + targetName + '\']').first();
+        $('#content').animate({
+          scrollTop: $('#content').scrollTop() + target.position().top - $('#header').innerHeight() - 5,
+        }, 250);
+      });
+
+      // any additional javascript
+      
+    });
+  </script>
+</head>
+<body>
+  <div id="header">
+    <div id="namecontainer">
+      
+      <span>Lifecraft API - Documentation v1</span>
+    </div>
+    <div id="searchbox"><input type="text" class="api" placeholder="Search the documentation, hit F4 to focus..."></div>
+  </div>
+<div id="summary"><div class="summary">
+<div class="api summary-root-category"><span>Enums</span></div>
+<div class="indented">    <div class="summary">
+    <a class="api link" targetname="Direction"><span class="AS-enumtype">Direction</span></a>
+    </div>
+</div>
+</div>
+<div class="summary">
+<div class="api summary-root-category"><span>Value Types</span></div>
+<div class="indented">    <div class="summary">
+    <a class="api link" targetname="Mask"><span class="AS-valuetype">Mask</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="Point"><span class="AS-valuetype">Point</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="Rect"><span class="AS-valuetype">Rect</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="Slice"><span class="AS-valuetype">Slice</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="ipoint"><span class="AS-valuetype">ipoint</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="data::RecipeStep"><span class="AS-namespace">data</span>::<span class="AS-valuetype">RecipeStep</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::effects::WorkingEffect"><span class="AS-namespace">gfx</span>::<span class="AS-namespace">effects</span>::<span class="AS-valuetype">WorkingEffect</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="item::Stack"><span class="AS-namespace">item</span>::<span class="AS-valuetype">Stack</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="item::Storage"><span class="AS-namespace">item</span>::<span class="AS-valuetype">Storage</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="object::Size"><span class="AS-namespace">object</span>::<span class="AS-valuetype">Size</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="world::Chunk"><span class="AS-namespace">world</span>::<span class="AS-valuetype">Chunk</span></a>
+    </div>
+</div>
+</div>
+<div class="summary">
+<div class="api summary-root-category"><span>Classes</span></div>
+<div class="indented">    <div class="summary">
+    <a class="api link" targetname="Data"><span class="AS-classtype">Data</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="Game"><span class="AS-classtype">Game</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="Logic"><span class="AS-classtype">Logic</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="Mod"><span class="AS-classtype">Mod</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="data::EvolutionStep"><span class="AS-namespace">data</span>::<span class="AS-classtype">EvolutionStep</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="data::ItemArchetype"><span class="AS-namespace">data</span>::<span class="AS-classtype">ItemArchetype</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="data::ItemCategoryArchetype"><span class="AS-namespace">data</span>::<span class="AS-classtype">ItemCategoryArchetype</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="data::ObjectArchetype"><span class="AS-namespace">data</span>::<span class="AS-classtype">ObjectArchetype</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="data::Recipe"><span class="AS-namespace">data</span>::<span class="AS-classtype">Recipe</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="data::ZoneArchetype"><span class="AS-namespace">data</span>::<span class="AS-classtype">ZoneArchetype</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::Asset"><span class="AS-namespace">gfx</span>::<span class="AS-classtype">Asset</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::Sprite"><span class="AS-namespace">gfx</span>::<span class="AS-classtype">Sprite</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::objects::ObjectGfxNode"><span class="AS-namespace">gfx</span>::<span class="AS-namespace">objects</span>::<span class="AS-classtype">ObjectGfxNode</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::objects::SuperObjectGfxNode"><span class="AS-namespace">gfx</span>::<span class="AS-namespace">objects</span>::<span class="AS-classtype">SuperObjectGfxNode</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="objects::Object"><span class="AS-namespace">objects</span>::<span class="AS-classtype">Object</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="objects::SuperObject"><span class="AS-namespace">objects</span>::<span class="AS-classtype">SuperObject</span></a>
+    </div>
+</div>
+</div>
+<div class="summary">
+<div class="api summary-root-category"><span>Functions</span></div>
+<div class="indented">    <div class="summary">
+    <a class="api link" targetname="formatFloat"><span class="AS-functionname">formatFloat</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="formatInt"><span class="AS-functionname">formatInt</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="formatUInt"><span class="AS-functionname">formatUInt</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="parseFloat"><span class="AS-functionname">parseFloat</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="parseInt"><span class="AS-functionname">parseInt</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="parseUInt"><span class="AS-functionname">parseUInt</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::registerObjectRenderer"><span class="AS-namespace">gfx</span>::<span class="AS-functionname">registerObjectRenderer</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::assets::generateRectBatch"><span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">generateRectBatch</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::assets::generateTileBatch"><span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">generateTileBatch</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::assets::registerGraphics"><span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">registerGraphics</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::assets::remapSurface9toEdgeMap16"><span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">remapSurface9toEdgeMap16</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::assets::remapSurfaceToEdgeMap"><span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">remapSurfaceToEdgeMap</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="gfx::assets::remapWallStyle8toEdgeMap16"><span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">remapWallStyle8toEdgeMap16</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="objects::registerObjectBuilder"><span class="AS-namespace">objects</span>::<span class="AS-functionname">registerObjectBuilder</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="random::randRange"><span class="AS-namespace">random</span>::<span class="AS-functionname">randRange</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="system::log"><span class="AS-namespace">system</span>::<span class="AS-functionname">log</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="world::getChunk"><span class="AS-namespace">world</span>::<span class="AS-functionname">getChunk</span></a>
+    </div>
+    <div class="summary">
+    <a class="api link" targetname="world::hasResourceHeap"><span class="AS-namespace">world</span>::<span class="AS-functionname">hasResourceHeap</span></a>
+    </div>
+</div>
+</div>
+</div><div id="content"><div class="block1"><a name=""></a><h1>Enums</h1>
+<div><div class="block2"><a name="Direction"></a><h2>Direction</h2>
+<div><a name="Direction"></a><div class="block" name="Direction">
+<div class="api"><span class="AS-keyword">enum</span> <span class="AS-enumtype">Direction</span>
+{
+	 <span class="AS-enumvalue">North</span> = <span class="AS-number">64</span>,
+	 <span class="AS-enumvalue">East</span> = <span class="AS-number">1</span>,
+	 <span class="AS-enumvalue">South</span> = <span class="AS-number">4</span>,
+	 <span class="AS-enumvalue">West</span> = <span class="AS-number">16</span>
+}</div></div>
+</div></div></div></div><div class="block1"><a name=""></a><h1>Value Types</h1>
+<div><div class="block2"><a name="Mask"></a><h2>Mask</h2>
+<div><a name="mask"></a><div class="block" name="mask">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">Mask</span>
+{
+	<span class="AS-keyword">bool</span> <span class="AS-methodname">any</span>();
+}</div><div class="documentation">represents a directional mask, used for neighbors conditions calculator.</div></div>
+<a name="any"></a><div class="block" name="any">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-valuetype">Mask</span>::<span class="AS-methodname">any</span>()</div><div class="documentation">returns true if any of the directions are set for the mask.</div></div>
+</div></div><div class="block2"><a name="Point"></a><h2>Point</h2>
+<div><a name="point"></a><div class="block" name="point">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">Point</span>
+{
+	<span class="AS-valuetype">Point</span>(<span class="AS-keyword">float</span> x, <span class="AS-keyword">float</span> y);
+	<span class="AS-keyword">float</span> <span class="AS-methodname">x</span>();
+	<span class="AS-keyword">float</span> <span class="AS-methodname">y</span>();
+}</div><div class="documentation">represents a 2D point. All fields are float variables</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">Point</span>::<span class="AS-valuetype">Point</span>(<span class="AS-keyword">float</span> x, <span class="AS-keyword">float</span> y)</div></div>
+<a name="x"></a><div class="block" name="x">
+<div class="api"><span class="AS-keyword">float</span> <span class="AS-valuetype">Point</span>::<span class="AS-methodname">x</span>()</div><div class="documentation">returns x coordinate</div></div>
+<a name="y"></a><div class="block" name="y">
+<div class="api"><span class="AS-keyword">float</span> <span class="AS-valuetype">Point</span>::<span class="AS-methodname">y</span>()</div><div class="documentation">returns y coordinate</div></div>
+</div></div><div class="block2"><a name="Rect"></a><h2>Rect</h2>
+<div><a name="rect"></a><div class="block" name="rect">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">Rect</span>
+{
+	<span class="AS-valuetype">Rect</span>(<span class="AS-keyword">float</span> x, <span class="AS-keyword">float</span> y, <span class="AS-keyword">float</span> w, <span class="AS-keyword">float</span> h);
+	<span class="AS-keyword">float</span> <span class="AS-methodname">x</span>();
+	<span class="AS-keyword">float</span> <span class="AS-methodname">y</span>();
+	<span class="AS-keyword">float</span> <span class="AS-methodname">w</span>();
+	<span class="AS-keyword">float</span> <span class="AS-methodname">h</span>();
+	<span class="AS-valuetype">Rect</span>& <span class="AS-methodname">operator+=</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Point</span>& <span class="AS-keyword">in</span> offset);
+	<span class="AS-valuetype">Rect</span>& <span class="AS-methodname">operator+=</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Rect</span>& <span class="AS-keyword">in</span> offset);
+}</div><div class="documentation">Represents a rectangle composed by origin and size. All fields are float variables</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">Rect</span>::<span class="AS-valuetype">Rect</span>(<span class="AS-keyword">float</span> x, <span class="AS-keyword">float</span> y, <span class="AS-keyword">float</span> w, <span class="AS-keyword">float</span> h)</div></div>
+<a name="x"></a><div class="block" name="x">
+<div class="api"><span class="AS-keyword">float</span> <span class="AS-valuetype">Rect</span>::<span class="AS-methodname">x</span>()</div><div class="documentation">return the x origin of the rectangle</div></div>
+<a name="y"></a><div class="block" name="y">
+<div class="api"><span class="AS-keyword">float</span> <span class="AS-valuetype">Rect</span>::<span class="AS-methodname">y</span>()</div><div class="documentation">return the y origin of the rectangle</div></div>
+<a name="w"></a><div class="block" name="w">
+<div class="api"><span class="AS-keyword">float</span> <span class="AS-valuetype">Rect</span>::<span class="AS-methodname">w</span>()</div><div class="documentation">return the width of the rectangle</div></div>
+<a name="h"></a><div class="block" name="h">
+<div class="api"><span class="AS-keyword">float</span> <span class="AS-valuetype">Rect</span>::<span class="AS-methodname">h</span>()</div><div class="documentation">return the height of the rectangle</div></div>
+<a name="opaddassign"></a><div class="block" name="opaddassign">
+<div class="api"><span class="AS-valuetype">Rect</span>& <span class="AS-valuetype">Rect</span>::<span class="AS-methodname">operator+=</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Point</span>& <span class="AS-keyword">in</span> offset)</div><div class="documentation">shifts origin of rectangle by specified amount</div></div>
+<a name="opaddassign"></a><div class="block" name="opaddassign">
+<div class="api"><span class="AS-valuetype">Rect</span>& <span class="AS-valuetype">Rect</span>::<span class="AS-methodname">operator+=</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Rect</span>& <span class="AS-keyword">in</span> offset)</div><div class="documentation">shifts origin of the rectangle by origin of the argument and sets its size to the size of argument. useful to cut a rectangle out of a larger one</div></div>
+</div></div><div class="block2"><a name="Slice"></a><h2>Slice</h2>
+<div><a name="slice"></a><div class="block" name="slice">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">Slice</span>
+{
+	<span class="AS-valuetype">Slice</span>(<span class="AS-keyword">int</span>& <span class="AS-keyword">in</span> );
+	<span class="AS-valuetype">~Slice</span>();
+}</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">Slice</span>::<span class="AS-valuetype">Slice</span>(<span class="AS-keyword">int</span>& <span class="AS-keyword">in</span> )</div></div>
+<a name="$beh2"></a><div class="block" name="$beh2">
+<div class="api"><span class="AS-valuetype">Slice</span>::<span class="AS-valuetype">~Slice</span>()</div></div>
+</div></div><div class="block2"><a name="ipoint"></a><h2>ipoint</h2>
+<div><a name="ipoint"></a><div class="block" name="ipoint">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">ipoint</span>
+{
+	<span class="AS-valuetype">ipoint</span>(<span class="AS-keyword">int</span> x, <span class="AS-keyword">int</span> y);
+	<span class="AS-keyword">int</span> <span class="AS-methodname">x</span>();
+	<span class="AS-keyword">int</span> <span class="AS-methodname">y</span>();
+}</div><div class="documentation">represents a 2D point. All fields are int variables</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">ipoint</span>::<span class="AS-valuetype">ipoint</span>(<span class="AS-keyword">int</span> x, <span class="AS-keyword">int</span> y)</div></div>
+<a name="x"></a><div class="block" name="x">
+<div class="api"><span class="AS-keyword">int</span> <span class="AS-valuetype">ipoint</span>::<span class="AS-methodname">x</span>()</div><div class="documentation">returns x coordinate</div></div>
+<a name="y"></a><div class="block" name="y">
+<div class="api"><span class="AS-keyword">int</span> <span class="AS-valuetype">ipoint</span>::<span class="AS-methodname">y</span>()</div><div class="documentation">returns y coordinate</div></div>
+</div></div><div class="block2"><a name="data::RecipeStep"></a><h2>data::RecipeStep</h2>
+<div><a name="recipestep"></a><div class="block" name="recipestep">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">RecipeStep</span>
+{
+	<span class="AS-valuetype">RecipeStep</span>();
+	<span class="AS-valuetype">~RecipeStep</span>();
+	<span class="AS-keyword">float</span> <span class="AS-methodname">seconds</span>();
+	<span class="AS-valuetype">Slice</span> <span class="AS-methodname">input</span>();
+}</div><div class="documentation">a crafting recipe step</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">RecipeStep</span>::<span class="AS-valuetype">RecipeStep</span>()</div></div>
+<a name="$beh2"></a><div class="block" name="$beh2">
+<div class="api"><span class="AS-valuetype">RecipeStep</span>::<span class="AS-valuetype">~RecipeStep</span>()</div></div>
+<a name="seconds"></a><div class="block" name="seconds">
+<div class="api"><span class="AS-keyword">float</span> <span class="AS-valuetype">RecipeStep</span>::<span class="AS-methodname">seconds</span>()</div><div class="documentation">return duration of crafting step in seconds</div></div>
+<a name="input"></a><div class="block" name="input">
+<div class="api"><span class="AS-valuetype">Slice</span> <span class="AS-valuetype">RecipeStep</span>::<span class="AS-methodname">input</span>()</div></div>
+</div></div><div class="block2"><a name="gfx::effects::WorkingEffect"></a><h2>gfx::effects::WorkingEffect</h2>
+<div><a name="workingeffect"></a><div class="block" name="workingeffect">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">WorkingEffect</span>
+{
+	<span class="AS-valuetype">WorkingEffect</span>();
+	<span class="AS-keyword">void</span> <span class="AS-methodname">update</span>(<span class="AS-keyword">bool</span> working, <span class="AS-keyword">float</span> dt);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">setTarget</span>(<span class="AS-classtype">Sprite</span>@ sprite);
+}</div><div class="documentation">a togglable working effect that can be applied to sprites</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">WorkingEffect</span>::<span class="AS-valuetype">WorkingEffect</span>()</div></div>
+<a name="update"></a><div class="block" name="update">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-valuetype">WorkingEffect</span>::<span class="AS-methodname">update</span>(<span class="AS-keyword">bool</span> working, <span class="AS-keyword">float</span> dt)</div><div class="documentation">update the effect</div></div>
+<a name="settarget"></a><div class="block" name="settarget">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-valuetype">WorkingEffect</span>::<span class="AS-methodname">setTarget</span>(<span class="AS-classtype">Sprite</span>@ sprite)</div><div class="documentation">set the target of the effect</div></div>
+</div></div><div class="block2"><a name="item::Stack"></a><h2>item::Stack</h2>
+<div><a name="stack"></a><div class="block" name="stack">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">Stack</span>
+{
+	<span class="AS-valuetype">Stack</span>();
+	<span class="AS-valuetype">Stack</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ item, <span class="AS-keyword">uint</span> count);
+	<span class="AS-valuetype">~Stack</span>();
+	<span class="AS-valuetype">Stack</span>& <span class="AS-methodname">operator=</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Stack</span>& <span class="AS-keyword">in</span> other);
+	<span class="AS-keyword">uint</span> <span class="AS-methodname">count</span>();
+	<span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ <span class="AS-methodname">type</span>();
+}</div><div class="documentation">item stack</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">Stack</span>::<span class="AS-valuetype">Stack</span>()</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">Stack</span>::<span class="AS-valuetype">Stack</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ item, <span class="AS-keyword">uint</span> count)</div></div>
+<a name="$beh2"></a><div class="block" name="$beh2">
+<div class="api"><span class="AS-valuetype">Stack</span>::<span class="AS-valuetype">~Stack</span>()</div></div>
+<a name="opassign"></a><div class="block" name="opassign">
+<div class="api"><span class="AS-valuetype">Stack</span>& <span class="AS-valuetype">Stack</span>::<span class="AS-methodname">operator=</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Stack</span>& <span class="AS-keyword">in</span> other)</div></div>
+<a name="count"></a><div class="block" name="count">
+<div class="api"><span class="AS-keyword">uint</span> <span class="AS-valuetype">Stack</span>::<span class="AS-methodname">count</span>()</div><div class="documentation">return the amount of items</div></div>
+<a name="type"></a><div class="block" name="type">
+<div class="api"><span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ <span class="AS-valuetype">Stack</span>::<span class="AS-methodname">type</span>()</div><div class="documentation">return the type of item</div></div>
+</div></div><div class="block2"><a name="item::Storage"></a><h2>item::Storage</h2>
+<div><a name="storage"></a><div class="block" name="storage">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">Storage</span>
+{
+	<span class="AS-valuetype">Storage</span>();
+	<span class="AS-valuetype">~Storage</span>();
+	<span class="AS-valuetype">Storage</span>& <span class="AS-methodname">operator=</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Storage</span>& <span class="AS-keyword">in</span> other);
+}</div><div class="documentation">generic item container data class</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">Storage</span>::<span class="AS-valuetype">Storage</span>()</div></div>
+<a name="$beh2"></a><div class="block" name="$beh2">
+<div class="api"><span class="AS-valuetype">Storage</span>::<span class="AS-valuetype">~Storage</span>()</div></div>
+<a name="opassign"></a><div class="block" name="opassign">
+<div class="api"><span class="AS-valuetype">Storage</span>& <span class="AS-valuetype">Storage</span>::<span class="AS-methodname">operator=</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Storage</span>& <span class="AS-keyword">in</span> other)</div></div>
+</div></div><div class="block2"><a name="object::Size"></a><h2>object::Size</h2>
+<div><a name="size"></a><div class="block" name="size">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">Size</span>
+{
+	<span class="AS-valuetype">Size</span>(<span class="AS-keyword">int</span> width, <span class="AS-keyword">int</span> depth, <span class="AS-keyword">int</span> height);
+}</div><div class="documentation">represents the logical size of an object. All fields are int variables</div></div>
+<a name="$beh0"></a><div class="block" name="$beh0">
+<div class="api"><span class="AS-valuetype">Size</span>::<span class="AS-valuetype">Size</span>(<span class="AS-keyword">int</span> width, <span class="AS-keyword">int</span> depth, <span class="AS-keyword">int</span> height)</div></div>
+</div></div><div class="block2"><a name="world::Chunk"></a><h2>world::Chunk</h2>
+<div><a name="chunk"></a><div class="block" name="chunk">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-valuetype">Chunk</span>
+{
+	<span class="AS-keyword">int</span> <span class="AS-methodname">x</span>();
+	<span class="AS-keyword">int</span> <span class="AS-methodname">y</span>();
+	<span class="AS-keyword">bool</span> <span class="AS-methodname">hasZone</span>();
+	<span class="AS-valuetype">Mask</span> <span class="AS-methodname">neighborMask</span>();
+}</div><div class="documentation">Represents a logic reference to a world chunk.</div></div>
+<a name="x"></a><div class="block" name="x">
+<div class="api"><span class="AS-keyword">int</span> <span class="AS-valuetype">Chunk</span>::<span class="AS-methodname">x</span>()</div><div class="documentation">Returns the x coordinate of the chunk, can be negative.</div></div>
+<a name="y"></a><div class="block" name="y">
+<div class="api"><span class="AS-keyword">int</span> <span class="AS-valuetype">Chunk</span>::<span class="AS-methodname">y</span>()</div><div class="documentation">Returns the y coordinate of the chunk, can be negative.</div></div>
+<a name="haszone"></a><div class="block" name="haszone">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-valuetype">Chunk</span>::<span class="AS-methodname">hasZone</span>()</div></div>
+<a name="neighbormask"></a><div class="block" name="neighbormask">
+<div class="api"><span class="AS-valuetype">Mask</span> <span class="AS-valuetype">Chunk</span>::<span class="AS-methodname">neighborMask</span>()</div><div class="documentation">Place a specific chunk type in the map at specified coordinates, overwrite any previous existing chunk.</div></div>
+</div></div></div></div><div class="block1"><a name=""></a><h1>Classes</h1>
+<div><div class="block2"><a name="Data"></a><h2>Data</h2>
+<div><a name="data"></a><div class="block" name="data">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">Data</span>
+{
+	<span class="AS-classtype">ItemArchetype</span>@ <span class="AS-methodname">item</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident);
+	<span class="AS-classtype">ItemCategoryArchetype</span>@ <span class="AS-methodname">itemCategory</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident);
+	<span class="AS-classtype">Recipe</span>@ <span class="AS-methodname">recipe</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident);
+	<span class="AS-classtype">EvolutionStep</span>@ <span class="AS-methodname">evolutionStep</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident);
+	<span class="AS-classtype">ZoneArchetype</span>@ <span class="AS-methodname">zone</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident);
+	<span class="AS-classtype">ItemArchetype</span>@ <span class="AS-methodname">registerItem</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident, <span class="AS-keyword">const</span> <span class="AS-classtype">ItemCategoryArchetype</span>@ category = null);
+	<span class="AS-classtype">ObjectArchetype</span>@ <span class="AS-methodname">registerObject</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident, <span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ item, <span class="AS-keyword">const</span> <span class="AS-valuetype">Size</span>& <span class="AS-keyword">in</span> size);
+	<span class="AS-classtype">ItemCategoryArchetype</span>@ <span class="AS-methodname">registerItemCategory</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">registerString</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident, <span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> value);
+	<span class="AS-classtype">Asset</span>@ <span class="AS-methodname">asset</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident);
+	<span class="AS-keyword">bool</span> <span class="AS-methodname">removeEvolutionStep</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">setAttribute</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> key, <span class="AS-keyword">int</span> value);
+}</div><div class="documentation">interface to game data</div></div>
+<a name="item"></a><div class="block" name="item">
+<div class="api"><span class="AS-classtype">ItemArchetype</span>@ <span class="AS-classtype">Data</span>::<span class="AS-methodname">item</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident)</div><div class="documentation">returns the ItemArchetype specified by the identifier or null if not found</div></div>
+<a name="itemcategory"></a><div class="block" name="itemcategory">
+<div class="api"><span class="AS-classtype">ItemCategoryArchetype</span>@ <span class="AS-classtype">Data</span>::<span class="AS-methodname">itemCategory</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident)</div><div class="documentation">returns the ItemCategorySpec specified by the identifier or null if not found</div></div>
+<a name="recipe"></a><div class="block" name="recipe">
+<div class="api"><span class="AS-classtype">Recipe</span>@ <span class="AS-classtype">Data</span>::<span class="AS-methodname">recipe</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident)</div><div class="documentation">returns the Recipe specified by the identifier or null if not found</div></div>
+<a name="evolutionstep"></a><div class="block" name="evolutionstep">
+<div class="api"><span class="AS-classtype">EvolutionStep</span>@ <span class="AS-classtype">Data</span>::<span class="AS-methodname">evolutionStep</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident)</div><div class="documentation">returns the EvolutionStep specified by the identifier or null if not found</div></div>
+<a name="zone"></a><div class="block" name="zone">
+<div class="api"><span class="AS-classtype">ZoneArchetype</span>@ <span class="AS-classtype">Data</span>::<span class="AS-methodname">zone</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident)</div><div class="documentation">returns the ZoneArchetype specified by the identifier or null if not found</div></div>
+<a name="registeritem"></a><div class="block" name="registeritem">
+<div class="api"><span class="AS-classtype">ItemArchetype</span>@ <span class="AS-classtype">Data</span>::<span class="AS-methodname">registerItem</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident, <span class="AS-keyword">const</span> <span class="AS-classtype">ItemCategoryArchetype</span>@ category = null)</div><div class="documentation">generate new ItemArchetype and register it</div></div>
+<a name="registerobject"></a><div class="block" name="registerobject">
+<div class="api"><span class="AS-classtype">ObjectArchetype</span>@ <span class="AS-classtype">Data</span>::<span class="AS-methodname">registerObject</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident, <span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ item, <span class="AS-keyword">const</span> <span class="AS-valuetype">Size</span>& <span class="AS-keyword">in</span> size)</div><div class="documentation">generate new ObjectArchetype and register it</div></div>
+<a name="registeritemcategory"></a><div class="block" name="registeritemcategory">
+<div class="api"><span class="AS-classtype">ItemCategoryArchetype</span>@ <span class="AS-classtype">Data</span>::<span class="AS-methodname">registerItemCategory</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident)</div><div class="documentation">generate new ItemCagoryArchetype and register it</div></div>
+<a name="registerstring"></a><div class="block" name="registerstring">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Data</span>::<span class="AS-methodname">registerString</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident, <span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> value)</div><div class="documentation">register string to identifier</div></div>
+<a name="asset"></a><div class="block" name="asset">
+<div class="api"><span class="AS-classtype">Asset</span>@ <span class="AS-classtype">Data</span>::<span class="AS-methodname">asset</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident)</div><div class="documentation">returns gfx asset specified by identifier</div></div>
+<a name="removeevolutionstep"></a><div class="block" name="removeevolutionstep">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-classtype">Data</span>::<span class="AS-methodname">removeEvolutionStep</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> ident)</div><div class="documentation">returns the EvolutionStep specified by the identifier or null if not found</div></div>
+<a name="setattribute"></a><div class="block" name="setattribute">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Data</span>::<span class="AS-methodname">setAttribute</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> key, <span class="AS-keyword">int</span> value)</div><div class="documentation">set an int attribute for a data object</div></div>
+</div></div><div class="block2"><a name="Game"></a><h2>Game</h2>
+<div><a name="game"></a><div class="block" name="game">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">Game</span>
+{
+	<span class="AS-keyword">uint</span> <span class="AS-methodname">seed</span>();
+}</div><div class="documentation">the game interface</div></div>
+<a name="seed"></a><div class="block" name="seed">
+<div class="api"><span class="AS-keyword">uint</span> <span class="AS-classtype">Game</span>::<span class="AS-methodname">seed</span>()</div><div class="documentation">return the seed of the game</div></div>
+</div></div><div class="block2"><a name="Logic"></a><h2>Logic</h2>
+<div><a name="logic"></a><div class="block" name="logic">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">Logic</span>
+{
+	<span class="AS-keyword">void</span> <span class="AS-methodname">placeResourceHeap</span>(<span class="AS-valuetype">ipoint</span> coord, <span class="AS-keyword">const</span> <span class="AS-classtype">array</span>@ content);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">decorateChunk</span>(<span class="AS-valuetype">ipoint</span> coord, <span class="AS-keyword">const</span> <span class="AS-classtype">ZoneArchetype</span>@ zone);
+}</div><div class="documentation">the logic interface</div></div>
+<a name="placeresourceheap"></a><div class="block" name="placeresourceheap">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Logic</span>::<span class="AS-methodname">placeResourceHeap</span>(<span class="AS-valuetype">ipoint</span> coord, <span class="AS-keyword">const</span> <span class="AS-classtype">array</span>@ content)</div><div class="documentation">Place a resource heap at specified coordinates, if a chunk was there, overwrites the chunk.</div></div>
+<a name="decoratechunk"></a><div class="block" name="decoratechunk">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Logic</span>::<span class="AS-methodname">decorateChunk</span>(<span class="AS-valuetype">ipoint</span> coord, <span class="AS-keyword">const</span> <span class="AS-classtype">ZoneArchetype</span>@ zone)</div><div class="documentation">Decorate a chunk with specified zone</div></div>
+</div></div><div class="block2"><a name="Mod"></a><h2>Mod</h2>
+<div><a name="mod"></a><div class="block" name="mod">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">Mod</span>
+{
+	<span class="AS-keyword">void</span> <span class="AS-methodname">onLoad</span>();
+	<span class="AS-keyword">void</span> <span class="AS-methodname">onDataLoaded</span>();
+	<span class="AS-keyword">void</span> <span class="AS-methodname">onDataFinalization</span>();
+	<span class="AS-keyword">void</span> <span class="AS-methodname">onGenerateMap</span>();
+}</div><div class="documentation">This interface can be implemented to alter data in initialization phase</div></div>
+<a name="onload"></a><div class="block" name="onload">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Mod</span>::<span class="AS-methodname">onLoad</span>()</div><div class="documentation">This method is called when the mod is loaded, it's mandatory to register all the assets used by the mod here</div></div>
+<a name="ondataloaded"></a><div class="block" name="ondataloaded">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Mod</span>::<span class="AS-methodname">onDataLoaded</span>()</div><div class="documentation">This method is called after data is loaded</div></div>
+<a name="ondatafinalization"></a><div class="block" name="ondatafinalization">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Mod</span>::<span class="AS-methodname">onDataFinalization</span>()</div><div class="documentation">This method is called after data is loaded and &lt;c&gt;onDataLoaded&lt;/c&gt; is called on all mods</div></div>
+<a name="ongeneratemap"></a><div class="block" name="ongeneratemap">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Mod</span>::<span class="AS-methodname">onGenerateMap</span>()</div><div class="documentation">This method is called after map is generated, this is called only if world is new</div></div>
+</div></div><div class="block2"><a name="data::EvolutionStep"></a><h2>data::EvolutionStep</h2>
+<div><a name="evolutionstep"></a><div class="block" name="evolutionstep">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">EvolutionStep</span>
+{
+	<span class="AS-keyword">bool</span> <span class="AS-methodname">removeRecipe</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">Recipe</span>@ recipe);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">addRecipe</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">Recipe</span>@ recipe);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">setParent</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">EvolutionStep</span>@ recipe);
+}</div><div class="documentation">an evolution step</div></div>
+<a name="removerecipe"></a><div class="block" name="removerecipe">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-classtype">EvolutionStep</span>::<span class="AS-methodname">removeRecipe</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">Recipe</span>@ recipe)</div><div class="documentation">remove recipe from evolution step, return true if a recipe is found and removed</div></div>
+<a name="addrecipe"></a><div class="block" name="addrecipe">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">EvolutionStep</span>::<span class="AS-methodname">addRecipe</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">Recipe</span>@ recipe)</div><div class="documentation">add recipe to evolution step</div></div>
+<a name="setparent"></a><div class="block" name="setparent">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">EvolutionStep</span>::<span class="AS-methodname">setParent</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">EvolutionStep</span>@ recipe)</div><div class="documentation">set unique parnet of evolution step, replace old one if it was present</div></div>
+</div></div><div class="block2"><a name="data::ItemArchetype"></a><h2>data::ItemArchetype</h2>
+<div><a name="itemarchetype"></a><div class="block" name="itemarchetype">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">ItemArchetype</span>
+{
+	<span class="AS-valuetype">string</span> <span class="AS-methodname">identifier</span>();
+}</div><div class="documentation">Archetype of an item</div></div>
+<a name="identifier"></a><div class="block" name="identifier">
+<div class="api"><span class="AS-valuetype">string</span> <span class="AS-classtype">ItemArchetype</span>::<span class="AS-methodname">identifier</span>()</div><div class="documentation">returns the identifier of the item archetype</div></div>
+</div></div><div class="block2"><a name="data::ItemCategoryArchetype"></a><h2>data::ItemCategoryArchetype</h2>
+<div><a name="itemcategoryarchetype"></a><div class="block" name="itemcategoryarchetype">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">ItemCategoryArchetype</span>
+{
+}</div><div class="documentation">archetype of an item category</div></div>
+</div></div><div class="block2"><a name="data::ObjectArchetype"></a><h2>data::ObjectArchetype</h2>
+<div><a name="objectarchetype"></a><div class="block" name="objectarchetype">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">ObjectArchetype</span>
+{
+}</div><div class="documentation">archetype of an object</div></div>
+</div></div><div class="block2"><a name="data::Recipe"></a><h2>data::Recipe</h2>
+<div><a name="recipe"></a><div class="block" name="recipe">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">Recipe</span>
+{
+	<span class="AS-keyword">uint</span> <span class="AS-methodname">stepsCount</span>();
+	<span class="AS-valuetype">Slice</span> <span class="AS-methodname">steps</span>();
+	<span class="AS-keyword">void</span> <span class="AS-methodname">removeItem</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ item);
+}</div><div class="documentation">a crafting recipe</div></div>
+<a name="stepscount"></a><div class="block" name="stepscount">
+<div class="api"><span class="AS-keyword">uint</span> <span class="AS-classtype">Recipe</span>::<span class="AS-methodname">stepsCount</span>()</div><div class="documentation">returns the identifier of the recipe</div></div>
+<a name="steps"></a><div class="block" name="steps">
+<div class="api"><span class="AS-valuetype">Slice</span> <span class="AS-classtype">Recipe</span>::<span class="AS-methodname">steps</span>()</div><div class="documentation">returns a slice to the recipe steps</div></div>
+<a name="removeitem"></a><div class="block" name="removeitem">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Recipe</span>::<span class="AS-methodname">removeItem</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ item)</div><div class="documentation">remove all occurrences of item from the recipe</div></div>
+</div></div><div class="block2"><a name="data::ZoneArchetype"></a><h2>data::ZoneArchetype</h2>
+<div><a name="zonearchetype"></a><div class="block" name="zonearchetype">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">ZoneArchetype</span>
+{
+}</div><div class="documentation">archetype of a zone</div></div>
+</div></div><div class="block2"><a name="gfx::Asset"></a><h2>gfx::Asset</h2>
+<div><a name="asset"></a><div class="block" name="asset">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">Asset</span>
+{
+	<span class="AS-classtype">array</span>@ <span class="AS-methodname">batch</span>(<span class="AS-keyword">uint</span> index);
+	<span class="AS-valuetype">Rect</span> <span class="AS-methodname">rect</span>();
+	<span class="AS-keyword">const</span> <span class="AS-valuetype">Rect</span>& <span class="AS-methodname">rect</span>(<span class="AS-keyword">uint</span> index);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">setBatch</span>(<span class="AS-keyword">uint</span> index, <span class="AS-classtype">array</span>@ rects);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">replaceBatch</span>(<span class="AS-keyword">uint</span> index, <span class="AS-classtype">array</span>@ batch);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">replace</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Rect</span>& <span class="AS-keyword">in</span> rect);
+}</div><div class="documentation">graphical data which could be a single graphical rects or multiple batches</div></div>
+<a name="batch"></a><div class="block" name="batch">
+<div class="api"><span class="AS-classtype">array</span>@ <span class="AS-classtype">Asset</span>::<span class="AS-methodname">batch</span>(<span class="AS-keyword">uint</span> index)</div></div>
+<a name="rect"></a><div class="block" name="rect">
+<div class="api"><span class="AS-valuetype">Rect</span> <span class="AS-classtype">Asset</span>::<span class="AS-methodname">rect</span>()</div><div class="documentation">returns the rect specified by the asset</div></div>
+<a name="rect"></a><div class="block" name="rect">
+<div class="api"><span class="AS-keyword">const</span> <span class="AS-valuetype">Rect</span>& <span class="AS-classtype">Asset</span>::<span class="AS-methodname">rect</span>(<span class="AS-keyword">uint</span> index)</div><div class="documentation">returns the rect from first batch of the asset</div></div>
+<a name="setbatch"></a><div class="block" name="setbatch">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Asset</span>::<span class="AS-methodname">setBatch</span>(<span class="AS-keyword">uint</span> index, <span class="AS-classtype">array</span>@ rects)</div></div>
+<a name="replacebatch"></a><div class="block" name="replacebatch">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Asset</span>::<span class="AS-methodname">replaceBatch</span>(<span class="AS-keyword">uint</span> index, <span class="AS-classtype">array</span>@ batch)</div><div class="documentation">replace batch of asset, array passed must be same size of existing batch</div></div>
+<a name="replace"></a><div class="block" name="replace">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Asset</span>::<span class="AS-methodname">replace</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">Rect</span>& <span class="AS-keyword">in</span> rect)</div><div class="documentation">replace rect of asset</div></div>
+</div></div><div class="block2"><a name="gfx::Sprite"></a><h2>gfx::Sprite</h2>
+<div><a name="sprite"></a><div class="block" name="sprite">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">Sprite</span>
+{
+	<span class="AS-keyword">void</span> <span class="AS-methodname">rotate</span>(<span class="AS-keyword">float</span> radians);
+}</div><div class="documentation">a graphical sprite</div></div>
+<a name="rotate"></a><div class="block" name="rotate">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Sprite</span>::<span class="AS-methodname">rotate</span>(<span class="AS-keyword">float</span> radians)</div></div>
+</div></div><div class="block2"><a name="gfx::objects::ObjectGfxNode"></a><h2>gfx::objects::ObjectGfxNode</h2>
+<div><a name="objectgfxnode"></a><div class="block" name="objectgfxnode">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">ObjectGfxNode</span>
+{
+	<span class="AS-keyword">void</span> <span class="AS-methodname">generate</span>();
+	<span class="AS-keyword">void</span> <span class="AS-methodname">update</span>(<span class="AS-keyword">float</span> dt);
+}</div></div>
+<a name="generate"></a><div class="block" name="generate">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">ObjectGfxNode</span>::<span class="AS-methodname">generate</span>()</div></div>
+<a name="update"></a><div class="block" name="update">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">ObjectGfxNode</span>::<span class="AS-methodname">update</span>(<span class="AS-keyword">float</span> dt)</div></div>
+</div></div><div class="block2"><a name="gfx::objects::SuperObjectGfxNode"></a><h2>gfx::objects::SuperObjectGfxNode</h2>
+<div><a name="superobjectgfxnode"></a><div class="block" name="superobjectgfxnode">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">SuperObjectGfxNode</span>
+{
+	<span class="AS-classtype">Sprite</span>@ <span class="AS-methodname">createSprite</span>(<span class="AS-keyword">float</span> rx, <span class="AS-keyword">float</span> ry, <span class="AS-keyword">float</span> rw, <span class="AS-keyword">float</span> wh, <span class="AS-keyword">float</span> x, <span class="AS-keyword">float</span> y);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">generateBuildingBase</span>();
+	<span class="AS-keyword">const</span> <span class="AS-classtype">SuperObject</span>@ <span class="AS-methodname">object</span>();
+}</div><div class="documentation">interface to methods available to an ObjectNode</div></div>
+<a name="createsprite"></a><div class="block" name="createsprite">
+<div class="api"><span class="AS-classtype">Sprite</span>@ <span class="AS-classtype">SuperObjectGfxNode</span>::<span class="AS-methodname">createSprite</span>(<span class="AS-keyword">float</span> rx, <span class="AS-keyword">float</span> ry, <span class="AS-keyword">float</span> rw, <span class="AS-keyword">float</span> wh, <span class="AS-keyword">float</span> x, <span class="AS-keyword">float</span> y)</div></div>
+<a name="generatebuildingbase"></a><div class="block" name="generatebuildingbase">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">SuperObjectGfxNode</span>::<span class="AS-methodname">generateBuildingBase</span>()</div></div>
+<a name="object"></a><div class="block" name="object">
+<div class="api"><span class="AS-keyword">const</span> <span class="AS-classtype">SuperObject</span>@ <span class="AS-classtype">SuperObjectGfxNode</span>::<span class="AS-methodname">object</span>()</div></div>
+</div></div><div class="block2"><a name="objects::Object"></a><h2>objects::Object</h2>
+<div><a name="object"></a><div class="block" name="object">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">Object</span>
+{
+	<span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ <span class="AS-methodname">retrieveItem</span>();
+	<span class="AS-keyword">bool</span> <span class="AS-methodname">depositItem</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ item, <span class="AS-classtype">Direction</span> dir);
+	<span class="AS-keyword">void</span> <span class="AS-methodname">update</span>(<span class="AS-keyword">float</span> dt);
+}</div></div>
+<a name="retrieveitem"></a><div class="block" name="retrieveitem">
+<div class="api"><span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ <span class="AS-classtype">Object</span>::<span class="AS-methodname">retrieveItem</span>()</div></div>
+<a name="deposititem"></a><div class="block" name="deposititem">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-classtype">Object</span>::<span class="AS-methodname">depositItem</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">ItemArchetype</span>@ item, <span class="AS-classtype">Direction</span> dir)</div></div>
+<a name="update"></a><div class="block" name="update">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-classtype">Object</span>::<span class="AS-methodname">update</span>(<span class="AS-keyword">float</span> dt)</div></div>
+</div></div><div class="block2"><a name="objects::SuperObject"></a><h2>objects::SuperObject</h2>
+<div><a name="superobject"></a><div class="block" name="superobject">
+<div class="api"><span class="AS-keyword">class</span> <span class="AS-classtype">SuperObject</span>
+{
+	<span class="AS-valuetype">ipoint</span> <span class="AS-methodname">coordinate</span>();
+	<span class="AS-keyword">const</span> <span class="AS-classtype">Object</span>@ <span class="AS-methodname">scriptObject</span>();
+}</div><div class="documentation">interface available to Object subclasses</div></div>
+<a name="coordinate"></a><div class="block" name="coordinate">
+<div class="api"><span class="AS-valuetype">ipoint</span> <span class="AS-classtype">SuperObject</span>::<span class="AS-methodname">coordinate</span>()</div><div class="documentation">get the coordinate of an object, always indicating the bottom left corner</div></div>
+<a name="scriptobject"></a><div class="block" name="scriptobject">
+<div class="api"><span class="AS-keyword">const</span> <span class="AS-classtype">Object</span>@ <span class="AS-classtype">SuperObject</span>::<span class="AS-methodname">scriptObject</span>()</div><div class="documentation">get the script object instance associated with this object</div></div>
+</div></div></div></div><div class="block1"><a name=""></a><h1>Functions</h1>
+<div><a name="formatFloat"></a><div class="block" name="formatFloat">
+<div class="api"><span class="AS-valuetype">string</span> <span class="AS-functionname">formatFloat</span>(<span class="AS-keyword">double</span> val, <span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> options = "", <span class="AS-keyword">uint</span> width = 0, <span class="AS-keyword">uint</span> precision = 0)</div></div>
+<a name="formatInt"></a><div class="block" name="formatInt">
+<div class="api"><span class="AS-valuetype">string</span> <span class="AS-functionname">formatInt</span>(<span class="AS-keyword">int64</span> val, <span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> options = "", <span class="AS-keyword">uint</span> width = 0)</div></div>
+<a name="formatUInt"></a><div class="block" name="formatUInt">
+<div class="api"><span class="AS-valuetype">string</span> <span class="AS-functionname">formatUInt</span>(<span class="AS-keyword">uint64</span> val, <span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> options = "", <span class="AS-keyword">uint</span> width = 0)</div></div>
+<a name="parseFloat"></a><div class="block" name="parseFloat">
+<div class="api"><span class="AS-keyword">double</span> <span class="AS-functionname">parseFloat</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> , <span class="AS-keyword">uint</span>& <span class="AS-keyword">out</span> byteCount = 0)</div></div>
+<a name="parseInt"></a><div class="block" name="parseInt">
+<div class="api"><span class="AS-keyword">int64</span> <span class="AS-functionname">parseInt</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> , <span class="AS-keyword">uint</span> base = 10, <span class="AS-keyword">uint</span>& <span class="AS-keyword">out</span> byteCount = 0)</div></div>
+<a name="parseUInt"></a><div class="block" name="parseUInt">
+<div class="api"><span class="AS-keyword">uint64</span> <span class="AS-functionname">parseUInt</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> , <span class="AS-keyword">uint</span> base = 10, <span class="AS-keyword">uint</span>& <span class="AS-keyword">out</span> byteCount = 0)</div></div>
+<a name="gfx::registerObjectRenderer"></a><div class="block" name="gfx::registerObjectRenderer">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-namespace">gfx</span>::<span class="AS-functionname">registerObjectRenderer</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> object, <span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> className)</div><div class="documentation">register a class as renderer of a specific object, class must inherit ObjectGfxNode interface</div></div>
+<a name="gfx::assets::generateRectBatch"></a><div class="block" name="gfx::assets::generateRectBatch">
+<div class="api"><span class="AS-classtype">array</span>@ <span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">generateRectBatch</span>(<span class="AS-valuetype">ipoint</span> base, <span class="AS-keyword">uint</span> width, <span class="AS-keyword">uint</span> height, <span class="AS-keyword">uint</span> rows, <span class="AS-keyword">uint</span> columns, <span class="AS-keyword">uint</span> stepX = 0, <span class="AS-keyword">uint</span> stepY = 0)</div><div class="documentation">generate a default graphical batch for a grid of tiles</div></div>
+<a name="gfx::assets::generateTileBatch"></a><div class="block" name="gfx::assets::generateTileBatch">
+<div class="api"><span class="AS-classtype">array</span>@ <span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">generateTileBatch</span>(<span class="AS-valuetype">ipoint</span> base, <span class="AS-keyword">uint</span> width, <span class="AS-keyword">uint</span> height, <span class="AS-keyword">uint</span> rows, <span class="AS-keyword">uint</span> columns, <span class="AS-keyword">float</span> extraX = 0.0, <span class="AS-keyword">float</span> extraY = 0.0)</div><div class="documentation">generate a default graphical batch for a grid of tiles</div></div>
+<a name="gfx::assets::registerGraphics"></a><div class="block" name="gfx::assets::registerGraphics">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">registerGraphics</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> path, <span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> key, <span class="AS-keyword">const</span> <span class="AS-valuetype">Rect</span>& <span class="AS-keyword">in</span> bounds)</div><div class="documentation">register a texture graphics rect to a key, this is necessary to use custom graphics</div></div>
+<a name="gfx::assets::registerGraphics"></a><div class="block" name="gfx::assets::registerGraphics">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">registerGraphics</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> path, <span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> key, <span class="AS-keyword">const</span> <span class="AS-classtype">array</span>@ batch)</div><div class="documentation">register a texture graphics batch to a key, this is necessary to use custom graphics</div></div>
+<a name="gfx::assets::remapSurface9toEdgeMap16"></a><div class="block" name="gfx::assets::remapSurface9toEdgeMap16">
+<div class="api"><span class="AS-classtype">array</span>@ <span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">remapSurface9toEdgeMap16</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">array</span>@ batch)</div><div class="documentation">remap 3x3 style surface to 4x4 edge map</div></div>
+<a name="gfx::assets::remapSurfaceToEdgeMap"></a><div class="block" name="gfx::assets::remapSurfaceToEdgeMap">
+<div class="api"><span class="AS-classtype">array</span>@ <span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">remapSurfaceToEdgeMap</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">array</span>@ batch)</div><div class="documentation">remap 4x4/4x5 style surface to 4x4/4x5 edge map</div></div>
+<a name="gfx::assets::remapWallStyle8toEdgeMap16"></a><div class="block" name="gfx::assets::remapWallStyle8toEdgeMap16">
+<div class="api"><span class="AS-classtype">array</span>@ <span class="AS-namespace">gfx</span>::<span class="AS-namespace">assets</span>::<span class="AS-functionname">remapWallStyle8toEdgeMap16</span>(<span class="AS-keyword">const</span> <span class="AS-classtype">array</span>@ batch, <span class="AS-keyword">bool</span> inverted)</div><div class="documentation">remap 4x2 style wall to 4x4 edge map</div></div>
+<a name="objects::registerObjectBuilder"></a><div class="block" name="objects::registerObjectBuilder">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-namespace">objects</span>::<span class="AS-functionname">registerObjectBuilder</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> object, <span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> className)</div><div class="documentation">register a class as renderer of a specific object, class must inherit Object interface</div></div>
+<a name="random::randRange"></a><div class="block" name="random::randRange">
+<div class="api"><span class="AS-keyword">int</span> <span class="AS-namespace">random</span>::<span class="AS-functionname">randRange</span>(<span class="AS-keyword">int</span> min, <span class="AS-keyword">int</span> max)</div><div class="documentation">Generates a random int number in inclusive range.</div></div>
+<a name="system::log"></a><div class="block" name="system::log">
+<div class="api"><span class="AS-keyword">void</span> <span class="AS-namespace">system</span>::<span class="AS-functionname">log</span>(<span class="AS-keyword">const</span> <span class="AS-valuetype">string</span>& <span class="AS-keyword">in</span> text)</div></div>
+<a name="world::getChunk"></a><div class="block" name="world::getChunk">
+<div class="api"><span class="AS-valuetype">Chunk</span> <span class="AS-namespace">world</span>::<span class="AS-functionname">getChunk</span>(<span class="AS-keyword">int</span> x, <span class="AS-keyword">int</span> y)</div></div>
+<a name="world::hasResourceHeap"></a><div class="block" name="world::hasResourceHeap">
+<div class="api"><span class="AS-keyword">bool</span> <span class="AS-namespace">world</span>::<span class="AS-functionname">hasResourceHeap</span>(<span class="AS-keyword">int</span> x, <span class="AS-keyword">int</span> y)</div></div>
+</div></div></div>
+</body>
+</html>
